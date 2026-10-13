@@ -1,0 +1,188 @@
+<% layout('layouts/boilerplate') %>
+    <style>
+        #filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items:center;
+        }
+
+        .filter {
+            text-align: center;
+            margin-right: 2rem;
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+
+        .filter:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .filter.active {
+            opacity: 1;
+            border-bottom: 2px solid #222;
+        }
+
+        .filter p {
+            font-size: 0.8rem;
+        }
+
+        .tax-info{
+            display:none;
+        }
+
+        .tax-toggle {
+            border:1px solid black;
+            border-radius: 1rem;
+            height: 3.5rem;
+            padding: 1rem;
+            margin-left:5rem;
+            display: flex;
+            align-items: center;
+        }
+
+    </style>
+
+    <body>
+        <div id="filters">
+            <div class="filter active" data-category="all">
+                <div><i class="fa-regular fa-circle"></i></div>
+                <p>All</p>
+            </div>
+            <% categories.forEach(category => { %>
+                <div class="filter" data-category="<%= category %>">
+                    <div>
+                        <% if (category === "Trending") { %>
+                            <i class="fa-solid fa-fire"></i>
+                        <% } else if (category === "Rooms") { %>
+                            <i class="fa-solid fa-bed-pulse"></i>
+                        <% } else if (category === "Iconic Cities") { %>
+                            <i class="fa-sharp-duotone fa-solid fa-mountain-city"></i>
+                        <% } else if (category === "Mountains") { %>
+                            <i class="fa-solid fa-mountain"></i>
+                        <% } else if (category === "Castles") { %>
+                            <i class="fa-brands fa-fort-awesome"></i>
+                        <% } else if (category === "Amazing pools") { %>
+                            <i class="fa-solid fa-water-ladder"></i>
+                        <% } else if (category === "Farms") { %>
+                            <i class="fa-solid fa-tractor"></i>
+                        <% } else if (category === "Camping") { %>
+                            <i class="fa-solid fa-campground"></i>
+                        <% } else { %>
+                            <i class="fa-solid fa-building-columns"></i>
+                        <% } %>
+                    </div>
+                    <p><%= category %></p>
+                </div>
+            <% }) %>
+
+            <div class="tax-toggle">
+                <div class="form-check-reverse form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+                    <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+                </div>
+            </div>
+
+        </div>
+        <div id="listing-results" class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4 ">
+            <% for(let listing of alllistings){ %>
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+                    <div class="card col listing-card"
+                        data-category="<%= listing.category || '' %>"
+                        data-title="<%= listing.title %>"
+                        data-location="<%= listing.location %>"
+                        data-country="<%= listing.country %>"
+                        data-price="<%= listing.price %>">
+                        <img src="<%= listing.image?.url || 'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&w=800&q=60' %>"
+                            class="card-img-top" alt="listing image">
+                        <div class="card-img-overlay"></div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= listing.title %>
+                            </h5>
+                            <p class="card-text">
+                                <%= listing.description %>
+                            </p>
+                            <p class="card-text">
+                                &#8377;<%= listing.price.toLocaleString("en-in")%> /night
+                                <i class="tax-info"> &nbsp; &nbsp+18% GST</i>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+                <% } %>
+        </div>
+        <p id="no-listings" class="mt-3" hidden>No listings match your filters.</p>
+
+        <script>
+            const categoryFilters = document.querySelectorAll("#filters .filter");
+            const listingCards = document.querySelectorAll(".listing-card");
+            const searchForm = document.getElementById("listing-search");
+            const searchField = document.getElementById("search-field");
+            const searchTerm = document.getElementById("search-term");
+            const searchTermFields = document.getElementById("search-term-fields");
+            const priceRangeFields = document.getElementById("price-range-fields");
+            const minimumPrice = document.getElementById("minimum-price");
+            const maximumPrice = document.getElementById("maximum-price");
+            const noListingsMessage = document.getElementById("no-listings");
+            let selectedCategory = "all";
+
+            const applyListingFilters = () => {
+                const term = searchTerm.value.trim().toLocaleLowerCase();
+                let visibleListings = 0;
+
+                listingCards.forEach(card => {
+                    const matchesCategory =
+                        selectedCategory === "all" || card.dataset.category === selectedCategory;
+                    const price = Number(card.dataset.price);
+                    const matchesSearch = searchField.value === "price"
+                        ? (minimumPrice.value === "" || price >= Number(minimumPrice.value))
+                            && (maximumPrice.value === "" || price <= Number(maximumPrice.value))
+                        : !term || card.dataset[searchField.value].toLocaleLowerCase().includes(term);
+                    const isVisible = matchesCategory && matchesSearch;
+
+                    card.closest(".listing-link").hidden = !isVisible;
+                    if (isVisible) visibleListings += 1;
+                });
+
+                noListingsMessage.hidden = visibleListings > 0;
+            };
+
+            categoryFilters.forEach(filter => {
+                filter.addEventListener("click", () => {
+                    selectedCategory = filter.dataset.category;
+                    categoryFilters.forEach(item => item.classList.remove("active"));
+                    filter.classList.add("active");
+                    applyListingFilters();
+                });
+            });
+
+            searchForm.addEventListener("submit", event => {
+                event.preventDefault();
+                applyListingFilters();
+            });
+            searchTerm.addEventListener("input", applyListingFilters);
+            minimumPrice.addEventListener("input", applyListingFilters);
+            maximumPrice.addEventListener("input", applyListingFilters);
+            searchField.addEventListener("change", () => {
+                const isPriceSearch = searchField.value === "price";
+                searchTermFields.hidden = isPriceSearch;
+                priceRangeFields.hidden = !isPriceSearch;
+                applyListingFilters();
+            });
+
+            let taxSwitch = document.getElementById("switchCheckDefault");
+            taxSwitch.addEventListener("click",()=>{
+                let taxInfo = document.getElementsByClassName("tax-info");
+                for(info of taxInfo){
+                    if(info.style.display != "inline"){
+                        info.style.display="inline";
+                    }
+                    else{
+                        info.style.display="None";
+                    }
+                }
+            
+            });
+        </script>
+    </body>

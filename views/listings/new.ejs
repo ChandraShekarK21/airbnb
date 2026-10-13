@@ -1,0 +1,68 @@
+<% layout('layouts/boilerplate') %>
+<body>
+<div class="row mt-3">
+    <div class="col-8 offset-2">
+    <h3>Create a new listing</h3>
+    <form action="/listings" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
+        <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" name="listing[title]" id="title" required>
+        <div class="invalid-feedback">
+            Please provide a title.
+        </div>
+        </div>
+        <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea type="text" name="listing[description]" id="description" class="form-control" required></textarea> 
+        <div class="invalid-feedback">
+            Please provide a description.
+        </div>
+        </div>
+        <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <select name="listing[category]" id="category" class="form-select" required>
+            <option value="" selected disabled>Select a category</option>
+            <% categories.forEach(category => { %>
+                <option value="<%= category %>"><%= category %></option>
+            <% }) %>
+        </select>
+        <div class="invalid-feedback">
+            Please select a category.
+        </div>
+        </div>
+        <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" name="listing[location]" id="location" class="form-control" required>
+        <div class="invalid-feedback">
+            Please provide a location.
+        </div>
+        </div>
+        
+        <div class="mb-3">
+        <label for="image" class="form-label">Listing image</label>
+        <input name="listing[image]" id="image" class="form-control" type="file" required>
+        </div>
+
+
+        <div class="row">
+        <div class="mb-3 col-md-4" >
+        <label for="price" class="form-label">Price</label>
+        <input type="number" name="listing[price]" id="price" class="form-control" required>
+        <div class="invalid-feedback">
+            Please provide a price.
+        </div>
+        </div>
+        <div class="mb-3 col-md-8">
+        <label for="country" class="form-label">Country</label>
+        <input type="text" name="listing[country]" id="country" class="form-control" required>
+        <div class="invalid-feedback">
+            Country must be provided.
+        </div>
+        </div>
+        </div>
+        
+        <button class="btn btn-dark" type="submit">Create Listing</button>
+    </form>
+</div>
+</div>
+</body>

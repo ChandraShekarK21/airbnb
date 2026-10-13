@@ -1,0 +1,137 @@
+<style>
+  .search-btn{
+    background-color: rgb(222, 131, 86);
+    color: aliceblue;
+    border-radius: 25px;
+    padding: 0 1rem 0 1rem;
+  }
+
+  .search-btn:hover{
+    background-color: rgb(222, 131, 86);
+    color:aliceblue;
+  }
+  .search-btn i{
+    display:inline;
+    margin-right: 0.5rem;
+  }
+  .search-inp{
+    border-radius: 25px;
+    padding: 0.5rem 3rem 0.5rem 3rem;
+  }
+
+  .navbar-search {
+    display: flex;
+    align-items: end;
+    gap: 0.5rem;
+    width: min(48rem, 100%);
+    margin: 0 auto;
+  }
+
+  .navbar-search .search-field {
+    flex: 0 0 10rem;
+  }
+
+  .navbar-search .search-term-fields,
+  .navbar-search .price-range-fields {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .navbar-search .search-submit {
+    flex: 0 0 7rem;
+  }
+
+  .navbar-search [hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 767.98px) {
+    .navbar-search {
+      flex-wrap: wrap;
+      width: 100%;
+      padding: 0.75rem 0;
+    }
+
+    .navbar-search .search-field,
+    .navbar-search .search-term-fields,
+    .navbar-search .price-range-fields {
+      flex: 1 1 100%;
+    }
+
+    .navbar-search .search-submit {
+      flex: 1 1 100%;
+    }
+  }
+
+  .search-button{
+    background-color: rgb(222, 131, 86);
+    display:inline;
+  }
+  .search-button:hover{
+    background-color: rgb(222, 131, 86);
+  }
+</style>
+
+<nav class="navbar navbar-expand-md bg-body-light border-bottom border-dark sticky-top">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
+
+    <!-- Toggler for mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/listings">Explore</a>
+        <!-- <a class="nav-link disabled" aria-disabled="true">Disabled</a> -->
+      </div>
+      <% if (typeof alllistings !== 'undefined') { %>
+        <form id="listing-search" class="navbar-search" role="search">
+          <div class="search-field">
+            <label for="search-field" class="form-label mb-1">Search by</label>
+            <select id="search-field" class="form-select">
+              <option value="title">Title</option>
+              <option value="location">Location</option>
+              <option value="country">Country</option>
+              <option value="category">Category</option>
+              <option value="price">Price range</option>
+            </select>
+          </div>
+          <div id="search-term-fields" class="search-term-fields">
+            <label for="search-term" class="form-label mb-1">Search listings</label>
+            <input id="search-term" class="form-control" type="search" placeholder="Enter a search term">
+          </div>
+          <div id="price-range-fields" class="price-range-fields" hidden>
+            <div class="row g-2">
+              <div class="col">
+                <label for="minimum-price" class="form-label mb-1">Minimum price</label>
+                <input id="minimum-price" class="form-control" type="number" min="0" placeholder="Min">
+              </div>
+              <div class="col">
+                <label for="maximum-price" class="form-label mb-1">Maximum price</label>
+                <input id="maximum-price" class="form-control" type="number" min="0" placeholder="Max">
+              </div>
+            </div>
+          </div>
+          <div class="search-submit">
+            <button class="btn btn-dark w-100 search-button" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+          </div>
+        </form>
+      <% } %>
+
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/listings/new">Airbnb your home</a>
+        <% if (currentUser) { %>
+          <a class="nav-link" href="/logout"><b>Logout</b></a>
+          <% } else { %>
+            <a class="nav-link" href="/signup"><b>Sign Up</b></a>
+            <a class="nav-link" href="/login"><b>Login</b></a>
+            <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
